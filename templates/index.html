@@ -1,0 +1,176 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finanças Premium | Powered by AI</title>
+    <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+</head>
+
+<body>
+    <div class="container-aplicacao">
+        <header>
+            <div class="logo">
+                <i class="fa-solid fa-wallet"></i>
+                <h1>Finanças<span class="destaque">AI</span></h1>
+            </div>
+            <nav>
+                <button id="btn-abrir-modal-upload" class="btn-secundario">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Importar Extrato
+                </button>
+            </nav>
+        </header>
+
+        <main>
+            <!-- Resumo Financeiro -->
+            <section class="cartoes-resumo">
+                <div class="cartao cartao-receita">
+                    <div class="icone-cartao"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                    <div class="info-cartao">
+                        <h3>Receitas</h3>
+                        <p id="total-receitas">R$ 0,00</p>
+                    </div>
+                </div>
+                <div class="cartao cartao-despesa">
+                    <div class="icone-cartao"><i class="fa-solid fa-arrow-trend-down"></i></div>
+                    <div class="info-cartao">
+                        <h3>Despesas</h3>
+                        <p id="total-despesas">R$ 0,00</p>
+                    </div>
+                </div>
+                <div class="cartao cartao-saldo">
+                    <div class="icone-cartao"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="info-cartao">
+                        <h3>Saldo</h3>
+                        <p id="saldo-final">R$ 0,00</p>
+                    </div>
+                </div>
+            </section>
+
+            <div class="grade-conteudo">
+                <!-- Transações -->
+                <section class="secao-transacoes painel-vidro">
+                    <div class="cabecalho-secao">
+                        <h2>Transações</h2>
+                        <button id="btn-adicionar-transacao" class="btn-primario">
+                            <i class="fa-solid fa-plus"></i> Nova
+                        </button>
+                    </div>
+                    <div class="container-tabela">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Descrição</th>
+                                    <th>Categoria</th>
+                                    <th>Data</th>
+                                    <th>Valor</th>
+                                    <th>Tipo</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="corpo-tabela-transacoes">
+                                <!-- Preenchido via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Chat -->
+                <section class="secao-chat painel-vidro">
+                    <div class="cabecalho-secao">
+                        <h2><i class="fa-solid fa-robot"></i> Assistente Financeiro</h2>
+                    </div>
+                    <div class="container-chat">
+                        <div class="mensagens-chat" id="mensagens-chat">
+                            <div class="mensagem bot">
+                                <p>👋 Olá! Sou seu assistente financeiro inteligente. Faça upload de extratos ou
+                                    adicione transações manualmente e pergunte sobre seus gastos!</p>
+                            </div>
+                        </div>
+                        <div class="area-entrada-chat">
+                            <input type="text" id="campo-chat" placeholder="Ex: Quanto gastei com Uber este mês?">
+                            <button id="btn-enviar-chat"><i class="fa-solid fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal: Upload -->
+    <div id="modal-upload" class="modal oculto">
+        <div class="conteudo-modal">
+            <span class="fechar-modal-upload">&times;</span>
+            <h2><i class="fa-solid fa-cloud-arrow-up"></i> Upload de Extrato</h2>
+            <p>Envie seu extrato bancário (PDF ou CSV) para análise automática.</p>
+
+            <form id="formulario-upload" enctype="multipart/form-data">
+                <div class="wrapper-arquivo">
+                    <input type="file" id="arquivo" name="arquivo" accept=".pdf,.csv" required>
+                    <label for="arquivo" class="label-arquivo">
+                        <i class="fa-solid fa-file-import"></i> Escolher Arquivo
+                    </label>
+                </div>
+                <div id="status-upload"></div>
+                <button type="submit" class="btn-primario largura-total">Processar</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Nova Transação -->
+    <div id="modal-transacao" class="modal oculto">
+        <div class="conteudo-modal">
+            <span class="fechar-modal-transacao">&times;</span>
+            <h2><i class="fa-solid fa-plus-circle"></i> Nova Transação</h2>
+            <p>Registre uma transação financeira manualmente.</p>
+
+            <form id="formulario-transacao">
+                <div class="grupo-formulario">
+                    <label for="campo-descricao">Descrição</label>
+                    <input type="text" id="campo-descricao" name="nome_descricao" required
+                        placeholder="Ex: Uber, Mercado, Salário...">
+                </div>
+                <div class="grupo-formulario">
+                    <label for="campo-categoria">Categoria</label>
+                    <input type="text" id="campo-categoria" name="categoria" required
+                        placeholder="Ex: Transporte, Alimentação...">
+                </div>
+                <div class="grupo-formulario">
+                    <label for="campo-valor">Valor (R$)</label>
+                    <input type="text" id="campo-valor" name="valor" required placeholder="R$ 0,00">
+                </div>
+                <div class="grupo-formulario">
+                    <label for="campo-data">Data</label>
+                    <input type="text" id="campo-data" name="data" required placeholder="dd/mm/aaaa">
+                </div>
+                <div class="grupo-formulario">
+                    <label for="campo-tipo">Tipo</label>
+                    <select id="campo-tipo" name="tipo">
+                        <option value="Despesa">Despesa</option>
+                        <option value="Receita">Receita</option>
+                    </select>
+                </div>
+
+                <div id="status-transacao"></div>
+                <button type="submit" class="btn-primario largura-total">Salvar Transação</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bibliotecas JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="{% static 'js/aplicacao.js' %}"></script>
+</body>
+
+</html>
